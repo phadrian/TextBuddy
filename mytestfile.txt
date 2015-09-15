@@ -1,0 +1,6 @@
+added search
+and sort
+for CE2
+functions
+the test file
+this is

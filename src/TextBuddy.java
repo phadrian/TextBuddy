@@ -9,12 +9,15 @@ public class TextBuddy {
 	private static final String MESSAGE_ADDED = "Added to %1$s: \"%2$s\"";
 	private static final String MESSAGE_DELETED = "Deleted from %1$s: \"%2$s\"";
 	private static final String MESSAGE_CLEARED = "All content cleared from %1$s";
+	private static final String MESSAGE_SEARCH = "Search results for \"%1$s\":";
+	private static final String MESSAGE_NOTFOUND = "No results";
+	private static final String MESSAGE_SORTED = "%1$s has been sorted in alphabetical order";
 	private static final String MESSAGE_EMPTY = "%1$s is empty";
 	private static final String MESSAGE_INVALID = "Invalid command: %1$s";
 	
 	// The possible command types
 	public enum Command {
-		ADD, DELETE, DISPLAY, CLEAR, EXIT, INVALID;
+		ADD, DELETE, DISPLAY, CLEAR, SEARCH, SORT, EXIT, INVALID;
 	}
 	
 	public static void main(String[] args) {
@@ -59,6 +62,10 @@ public class TextBuddy {
 			return Command.DISPLAY;
 		} else if (commandType.equals("CLEAR")) {
 			return Command.CLEAR;
+		} else if (commandType.equals("SEARCH")) {
+			return Command.SEARCH;
+		} else if (commandType.equals("SORT")) {
+			return Command.SORT;
 		} else if (commandType.equals("EXIT")) {
 			return Command.EXIT;
 		} else {
@@ -71,7 +78,7 @@ public class TextBuddy {
 	 * perform the operation
 	 * 
 	 * @param command
-	 *            Enum type the contains the command type entered by the user
+	 *            Enum type that contains the command type entered by the user
 	 * @param fileName
 	 *            The name of the text file to be modified
 	 * @param userCommand
@@ -84,43 +91,50 @@ public class TextBuddy {
 		switch (command) {
 		case ADD:
 			addCommand(fileName, userCommand);
-			String formatAddMsg = String.format(MESSAGE_ADDED, 
-					fileName, getCommandArgs(userCommand));
-			displayMessage(formatAddMsg);
+			displayMessage(String.format(
+					MESSAGE_ADDED, fileName, getCommandArgs(userCommand)));
 			break;
 		case DELETE:
+			// Gets the line that is deleted to display in the console
 			String deletedLine = deleteCommand(fileName, userCommand);	
-			String formatDeleteMsg = String.format(MESSAGE_DELETED, 
-					fileName, deletedLine);
-			displayMessage(formatDeleteMsg);
+			displayMessage(String.format(
+					MESSAGE_DELETED, fileName, deletedLine));
 			break;
 		case DISPLAY:
 			displayFileContents(fileName);
 			break;
 		case CLEAR:
-			writeToBlankFile(fileName);			
-			String formatClearMsg = String.format(MESSAGE_CLEARED, fileName);
-			displayMessage(formatClearMsg);
+			writeToBlankFile(fileName);	
+			displayMessage(String.format(MESSAGE_CLEARED, fileName));
+			break;
+		case SEARCH:
+			displayMessage(String.format(
+					MESSAGE_SEARCH, getCommandArgs(userCommand)));
+			displayVector(searchFile(
+					fileName, getCommandArgs(userCommand)));
+			break;
+		case SORT:
+			sortFile(fileName);
+			displayMessage(String.format(MESSAGE_SORTED, fileName));
 			break;
 		case EXIT:
 			System.exit(0);
 		case INVALID:
-			String formatInvalidMsg = String.format(MESSAGE_INVALID, 
-					getCommandTypeString(userCommand));
-			displayMessage(formatInvalidMsg);
+			displayMessage(String.format(
+					MESSAGE_INVALID, getCommandTypeString(userCommand)));
 			break;
 		default: 
 			throw new Error("Unrecognized command type");	
 		}
 	}
 
-	private static void addCommand(String fileName, String userCommand) {
+	public static void addCommand(String fileName, String userCommand) {
 		String commandArgs = getCommandArgs(userCommand);			
 		writeToFile(fileName, commandArgs);				
 	}
 	
-	private static String deleteCommand(String fileName, String userCommand) {
-		return deleteLineFromFile2(fileName, getLineNumber(userCommand));		
+	public static String deleteCommand(String fileName, String userCommand) {
+		return deleteLineFromFile(fileName, getLineNumber(userCommand));		
 	}
 
 	/**
@@ -143,11 +157,7 @@ public class TextBuddy {
 		return commandArgs;
 	}
 
-	/*
-	 * Display method that prints out notifications after the operation has been completed
-	 * =====================================================================================
-	 */
-	
+	// Display method that prints out notifications after the operation	
 	public static void displayMessage(String message) {
 		System.out.println(message);
 	}
@@ -336,40 +346,49 @@ public class TextBuddy {
 		return deletedLine;
 	}
 	
-	private static String deleteLineFromFile2(String fileName, int lineNumber) {
+	/**
+	 * Searches the file for a certain specified word
+	 * 
+	 * @param fileName
+	 *            The name of the text file to search
+	 * @param searchTerm
+	 *            The term/word to be searched for in the file
+	 * @return A Vector<String> structure which contains all lines which contain 
+	 *         that word
+	 */
+	private static Vector<String> searchFile(String fileName, String searchTerm) {
 		
-		int lineCount = 1;
-		String inputLine, deletedLine = null;
-		BufferedReader bfReader = null;
-		Writer writer = null;
-		try {
-			bfReader = new BufferedReader(new InputStreamReader(
-					new FileInputStream(fileName), "UTF-8"));
-			writer = new BufferedWriter(new OutputStreamWriter(
-					new FileOutputStream(fileName), "UTF-8"));
-			
-			while ((inputLine = bfReader.readLine()) != null) {
-				System.out.println(453);
-				if (lineCount == lineNumber) {
-					deletedLine = inputLine;
-				} else {
-					writer.write(inputLine);
-					writer.write('\n');
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				bfReader.close();
-				writer.close();
-			} catch (IOException e) {
-				// Ignore
+		Vector<String> matchingArgsVector = new Vector<String>();
+		Vector<String> commandArgsVector = readFromFile(fileName);
+		for (int i = 1; i < commandArgsVector.size(); i++) {
+			String inputLine = commandArgsVector.get(i);
+			if (isSubstring(searchTerm, inputLine)) {
+				matchingArgsVector.add(i + ". " + inputLine);
 			}
 		}
-		return deletedLine;
+		return matchingArgsVector;
 	}
-
+	
+	/**
+	 * Sorts the file by alphabetical order
+	 * Numbers are taken to be Strings and not Integers, so 111 < 2
+	 * 
+	 * @param fileName
+	 *            The name of the file to be sorted
+	 */
+	private static void sortFile(String fileName) {
+		
+		Vector<String> commandArgsVector = readFromFile(fileName);
+		Collections.sort(commandArgsVector);
+		writeToNewFile(fileName, commandArgsVector);
+	}
+	
+	/**
+	 * Additional methods used within the program
+	 * getLineNumber
+	 * getCommandTypeString
+	 */
+	
 	/**
 	 * Extracts the line number to be deleted from the entire command input by
 	 * the user
@@ -394,5 +413,42 @@ public class TextBuddy {
 	private static String getCommandTypeString(String userCommand) {
 		String[] wordArray = userCommand.split(" ");
 		return wordArray[0];
+	}
+	
+	/**
+	 * This method checks whether str1 is a substring of another String str2
+	 * 
+	 * @param str1
+	 *            The matching String
+	 * @param str2
+	 *            The String to be compared with
+	 * @return Boolean value of whether str1 is a substring of str2
+	 */
+	private static boolean isSubstring(String str1, String str2) {
+		if (str1.length() > str2.length()) {
+			return false;
+		} else if (str1.length() == str2.length()) {
+			return str1.equals(str2);
+		} else if (str1.equals(str2.substring(0, str1.length()))) {
+			return true;
+		} else {
+			return isSubstring(str1, str2.substring(1));
+		}
+	}
+	
+	/**
+	 * Displays all elements of an input Vector
+	 * 
+	 * @param stringVector
+	 *            The Vector whose contents will be displayed
+	 */
+	private static void displayVector(Vector<String> stringVector) {
+		if (!stringVector.isEmpty()) {
+			for (int i = 0; i < stringVector.size(); i++) {
+				System.out.println(stringVector.get(i));
+			}
+		} else {
+			System.out.println(MESSAGE_NOTFOUND);
+		}
 	}
 }
