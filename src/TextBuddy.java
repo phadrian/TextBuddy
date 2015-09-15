@@ -50,7 +50,7 @@ public class TextBuddy {
 	 * @param userCommand
 	 *            String which contains the entire line input by the user
 	 */
-	private static Command getCommandType(String userCommand) {
+	protected static Command getCommandType(String userCommand) {
 		
 		String commandType = getCommandTypeString(userCommand).toUpperCase();
 		
@@ -85,7 +85,7 @@ public class TextBuddy {
 	 *            String which contains the entire line input by the user
 	 * @throws Error
 	 */
-	private static void mapCommandToAction(Command command, 
+	protected static void mapCommandToAction(Command command, 
 			String fileName, String userCommand) throws Error {
 		
 		switch (command) {
@@ -136,7 +136,12 @@ public class TextBuddy {
 	public static String deleteCommand(String fileName, String userCommand) {
 		return deleteLineFromFile(fileName, getLineNumber(userCommand));		
 	}
-
+	
+	// Display method that prints out notifications after the operation	
+	public static void displayMessage(String message) {
+		System.out.println(message);
+	}
+	
 	/**
 	 * This method extracts the text to be written into the file by the user from
 	 * the entire input line
@@ -145,7 +150,7 @@ public class TextBuddy {
 	 *            String which contains the entire line input by the user
 	 * @return Text to be written into the file
 	 */
-	private static String getCommandArgs(String userCommand) {
+	protected static String getCommandArgs(String userCommand) {
 		String[] wordArray = userCommand.split(" ");
 		String commandArgs = "";
 		
@@ -157,11 +162,6 @@ public class TextBuddy {
 		return commandArgs;
 	}
 
-	// Display method that prints out notifications after the operation	
-	public static void displayMessage(String message) {
-		System.out.println(message);
-	}
-	
 	/*
 	 * Methods that write data to the file
 	 * ======================================
@@ -177,7 +177,7 @@ public class TextBuddy {
 	 * @param commandArgs
 	 *            The text which the user wants to enter into the file
 	 */
-	private static void writeToFile(String fileName, String commandArgs) {
+	protected static void writeToFile(String fileName, String commandArgs) {
 		
 		Writer writer = null;
 		try {
@@ -205,7 +205,7 @@ public class TextBuddy {
 	 *            A Vector<String> structure whose elements are the Strings of text to be input
 	 *            into the text file by the user
 	 */
-	private static void writeToNewFile(String fileName, Vector<String> commandArgsVector) {
+	protected static void writeToNewFile(String fileName, Vector<String> commandArgsVector) {
 		
 		Writer writer = null;
 		try {
@@ -233,7 +233,7 @@ public class TextBuddy {
 	 * @param fileName
 	 *            The name of the text file to be modified
 	 */
-	private static void writeToBlankFile(String fileName) {
+	protected static void writeToBlankFile(String fileName) {
 		
 		Writer writer = null;
 		try {
@@ -267,7 +267,7 @@ public class TextBuddy {
 	 * @return A Vector<String> structure whose elements are the contents of the file
 	 *         in a String format
 	 */
-	private static Vector<String> readFromFile(String fileName) {
+	protected static Vector<String> readFromFile(String fileName) {
 		String inputLine;
 		BufferedReader bfReader = null;
 		Vector<String> commandArgsVector = new Vector<String>();
@@ -299,7 +299,7 @@ public class TextBuddy {
 	 * @param fileName
 	 *            The name of the text file to read from
 	 */
-	private static void displayFileContents(String fileName) {
+	protected static void displayFileContents(String fileName) {
 		
 		String inputLine;
 		int lineNumber = 1;
@@ -337,7 +337,7 @@ public class TextBuddy {
 	 *            The line number of the line to be deleted
 	 * @return The line that was deleted in a String format
 	 */
-	private static String deleteLineFromFile(String fileName, int lineNumber) {
+	protected static String deleteLineFromFile(String fileName, int lineNumber) {
 		
 		Vector<String> commandArgsVector = readFromFile(fileName);
 		String deletedLine = commandArgsVector.get(lineNumber);
@@ -356,13 +356,14 @@ public class TextBuddy {
 	 * @return A Vector<String> structure which contains all lines which contain 
 	 *         that word
 	 */
-	private static Vector<String> searchFile(String fileName, String searchTerm) {
+	protected static Vector<String> searchFile(String fileName, String searchTerm) {
 		
 		Vector<String> matchingArgsVector = new Vector<String>();
 		Vector<String> commandArgsVector = readFromFile(fileName);
 		for (int i = 1; i < commandArgsVector.size(); i++) {
 			String inputLine = commandArgsVector.get(i);
-			if (isSubstring(searchTerm, inputLine)) {
+			// Use lowercase to ensure case insensitive search
+			if (isSubstring(searchTerm.toLowerCase(), inputLine.toLowerCase())) {
 				matchingArgsVector.add(i + ". " + inputLine);
 			}
 		}
@@ -376,10 +377,10 @@ public class TextBuddy {
 	 * @param fileName
 	 *            The name of the file to be sorted
 	 */
-	private static void sortFile(String fileName) {
+	protected static void sortFile(String fileName) {
 		
 		Vector<String> commandArgsVector = readFromFile(fileName);
-		Collections.sort(commandArgsVector);
+		Collections.sort(commandArgsVector, String.CASE_INSENSITIVE_ORDER);
 		writeToNewFile(fileName, commandArgsVector);
 	}
 	
