@@ -17,22 +17,20 @@ public class TextBuddy {
 		ADD, DELETE, DISPLAY, CLEAR, EXIT, INVALID;
 	}
 	
-	public static void main(String[] args) {		
-		displayWelcomeMessage(args[0]);		
+	public static void main(String[] args) {
+		// Displays the welcome message
+		displayMessage(String.format(MESSAGE_WELCOME, args[0]));
+		// Runs the program till "exit" is entered
 		runProgramLoop(args[0]);
 	}
 	
-	private static void displayWelcomeMessage(String fileName) {
-		System.out.println(String.format(MESSAGE_WELCOME, fileName));
-	}
-	
-	private static void runProgramLoop(String fileName) {
+	public static void runProgramLoop(String fileName) {
 		
 		Scanner sc = new Scanner(System.in);
 		
 		while (true) {
 			// Prints instruction and gets input
-			displayCommandMessage();
+			System.out.print(MESSAGE_COMMAND);
 			
 			// Gets the user command
 			String userCommand = sc.nextLine();
@@ -41,10 +39,6 @@ public class TextBuddy {
 			Command command = getCommandType(userCommand);			
 			mapCommandToAction(command, fileName, userCommand);
 		}
-	}
-
-	private static void displayCommandMessage() {
-		System.out.print(MESSAGE_COMMAND);
 	}
 	
 	/**
@@ -88,23 +82,32 @@ public class TextBuddy {
 			String fileName, String userCommand) throws Error {
 		
 		switch (command) {
-		case ADD:			
+		case ADD:
 			addCommand(fileName, userCommand);
+			String formatAddMsg = String.format(MESSAGE_ADDED, 
+					fileName, getCommandArgs(userCommand));
+			displayMessage(formatAddMsg);
 			break;
 		case DELETE:
-			deleteCommand(fileName, userCommand);
+			String deletedLine = deleteCommand(fileName, userCommand);	
+			String formatDeleteMsg = String.format(MESSAGE_DELETED, 
+					fileName, deletedLine);
+			displayMessage(formatDeleteMsg);
 			break;
 		case DISPLAY:
 			displayFileContents(fileName);
 			break;
 		case CLEAR:
-			writeToNewFile(fileName);
-			displayClearMessage(fileName);
+			writeToBlankFile(fileName);			
+			String formatClearMsg = String.format(MESSAGE_CLEARED, fileName);
+			displayMessage(formatClearMsg);
 			break;
 		case EXIT:
 			System.exit(0);
 		case INVALID:
-			displayInvalidMessage(userCommand);
+			String formatInvalidMsg = String.format(MESSAGE_INVALID, 
+					getCommandTypeString(userCommand));
+			displayMessage(formatInvalidMsg);
 			break;
 		default: 
 			throw new Error("Unrecognized command type");	
@@ -114,13 +117,10 @@ public class TextBuddy {
 	private static void addCommand(String fileName, String userCommand) {
 		String commandArgs = getCommandArgs(userCommand);			
 		writeToFile(fileName, commandArgs);				
-		displayAddMessage(fileName, commandArgs);
 	}
 	
-	private static void deleteCommand(String fileName, String userCommand) {
-		String deletedLine = deleteLineFromFile(fileName, 
-				getLineNumber(userCommand));		
-		displayDeleteMessage(fileName, deletedLine);
+	private static String deleteCommand(String fileName, String userCommand) {
+		return deleteLineFromFile2(fileName, getLineNumber(userCommand));		
 	}
 
 	/**
@@ -135,42 +135,28 @@ public class TextBuddy {
 		String[] wordArray = userCommand.split(" ");
 		String commandArgs = "";
 		
-		for (int i = 1; i < wordArray.length; i++) {
+		for (int i = 1; i < wordArray.length - 1; i++) {
 			commandArgs += (wordArray[i] + " ");
 		}
+		// Manually add the last word to prevent additional whitespaces
+		commandArgs += wordArray[wordArray.length - 1];
 		return commandArgs;
 	}
 
 	/*
-	 * Display methods that print out notifications after the operation has been completed
+	 * Display method that prints out notifications after the operation has been completed
 	 * =====================================================================================
-	 * displayAddMessage
-	 * displayInvalidMessage
-	 * displayDeleteMessage
-	 * displayClearMessage
 	 */
 	
-	private static void displayAddMessage(String fileName, String commandArgs) {
-		System.out.println(String.format(MESSAGE_ADDED, fileName, commandArgs));
-	}
-	
-	private static void displayInvalidMessage(String userCommand) {
-		System.out.println(String.format(MESSAGE_INVALID, getCommandTypeString(userCommand)));
-	}
-	
-	private static void displayDeleteMessage(String fileName, String deletedLine) {
-		System.out.println(String.format(MESSAGE_DELETED, fileName, deletedLine));
-	}
-	
-	private static void displayClearMessage(String fileName) {
-		System.out.println(String.format(MESSAGE_CLEARED, fileName));
+	public static void displayMessage(String message) {
+		System.out.println(message);
 	}
 	
 	/*
 	 * Methods that write data to the file
 	 * ======================================
 	 * writeToFile
-	 * writeToNewFile
+	 * writeToBlankFile
 	 */
 	
 	/**
@@ -237,7 +223,7 @@ public class TextBuddy {
 	 * @param fileName
 	 *            The name of the text file to be modified
 	 */
-	private static void writeToNewFile(String fileName) {
+	private static void writeToBlankFile(String fileName) {
 		
 		Writer writer = null;
 		try {
@@ -347,6 +333,40 @@ public class TextBuddy {
 		String deletedLine = commandArgsVector.get(lineNumber);
 		commandArgsVector.remove(lineNumber);
 		writeToNewFile(fileName, commandArgsVector);
+		return deletedLine;
+	}
+	
+	private static String deleteLineFromFile2(String fileName, int lineNumber) {
+		
+		int lineCount = 1;
+		String inputLine, deletedLine = null;
+		BufferedReader bfReader = null;
+		Writer writer = null;
+		try {
+			bfReader = new BufferedReader(new InputStreamReader(
+					new FileInputStream(fileName), "UTF-8"));
+			writer = new BufferedWriter(new OutputStreamWriter(
+					new FileOutputStream(fileName), "UTF-8"));
+			
+			while ((inputLine = bfReader.readLine()) != null) {
+				System.out.println(453);
+				if (lineCount == lineNumber) {
+					deletedLine = inputLine;
+				} else {
+					writer.write(inputLine);
+					writer.write('\n');
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				bfReader.close();
+				writer.close();
+			} catch (IOException e) {
+				// Ignore
+			}
+		}
 		return deletedLine;
 	}
 
