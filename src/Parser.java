@@ -1,5 +1,4 @@
 import java.util.*;
-import java.io.*;
 
 public class Parser {
 
@@ -43,5 +42,37 @@ public class Parser {
     protected String getCommandTypeString(String userCommand) {
         String[] wordArray = userCommand.split(" ");
         return wordArray[0];
+    }
+
+    /**
+     * This method extracts the text to be written into the file by the user from
+     * the entire input line
+     *
+     * @param userCommand
+     *            String which contains the entire line input by the user
+     * @return Text to be written into the file
+     */
+    protected String getCommandArgs(String userCommand) {
+        String[] wordArray = userCommand.split(" ");
+        String commandArgs = "";
+
+        for (int i = 1; i < wordArray.length - 1; i++) {
+            commandArgs += (wordArray[i] + " ");
+        }
+        commandArgs += wordArray[wordArray.length - 1];
+        return commandArgs;
+    }
+
+    /**
+     * Extracts the line number to be deleted from the entire command input by
+     * the user
+     *
+     * @param userCommand
+     *            String which contains the entire line input by the user
+     * @return The line number of the line to be deleted
+     */
+    protected int getLineNumber(String userCommand) {
+        String[] wordArray = userCommand.split(" ");
+        return Integer.valueOf(wordArray[1]);
     }
 }

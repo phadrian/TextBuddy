@@ -6,6 +6,7 @@ import java.io.*;
 
 public class TextBuddyTest {
 
+    FileModifier file = new FileModifier();
     /**
      * testCase1 - testCase6
      * Test cases for TextBuddy.searchFile
@@ -16,7 +17,7 @@ public class TextBuddyTest {
         expectedOutput.add("4. added search");
         expectedOutput.add("5. and sort");
         expectedOutput.add("7. to the program");
-        assertEquals(expectedOutput, TextBuddy.searchFile("mytestfile.txt", "a"));
+        assertEquals(expectedOutput, file.searchFile("mytestfile.txt", "a"));
     }
 
     @Test
@@ -27,7 +28,7 @@ public class TextBuddyTest {
         expectedOutput.add("5. and sort");
         expectedOutput.add("6. functions");
         expectedOutput.add("7. to the program");
-        assertEquals(expectedOutput, TextBuddy.searchFile("mytestfile.txt", "t"));
+        assertEquals(expectedOutput, file.searchFile("mytestfile.txt", "t"));
     }
 
     @Test
@@ -36,13 +37,13 @@ public class TextBuddyTest {
         expectedOutput.add("1. this is");
         expectedOutput.add("2. the test file");
         expectedOutput.add("7. to the program");
-        assertEquals(expectedOutput, TextBuddy.searchFile("mytestfile.txt", "th"));
+        assertEquals(expectedOutput, file.searchFile("mytestfile.txt", "th"));
     }
 
     @Test
     public void testCase4() {
         Vector<String> expectedOutput = new Vector<String>();
-        assertEquals(expectedOutput, TextBuddy.searchFile("mytestfile.txt", "zzz"));
+        assertEquals(expectedOutput, file.searchFile("mytestfile.txt", "zzz"));
     }
 
     @Test
@@ -52,14 +53,14 @@ public class TextBuddyTest {
         expectedOutput.add("3. for CE2");
         expectedOutput.add("4. added search");
         expectedOutput.add("7. to the program");
-        assertEquals(expectedOutput, TextBuddy.searchFile("mytestfile.txt", "e"));
+        assertEquals(expectedOutput, file.searchFile("mytestfile.txt", "e"));
     }
 
     @Test
     public void testCase6() {
         Vector<String> expectedOutput = new Vector<String>();
         expectedOutput.add("3. for CE2");
-        assertEquals(expectedOutput, TextBuddy.searchFile("mytestfile.txt", "2"));
+        assertEquals(expectedOutput, file.searchFile("mytestfile.txt", "2"));
     }
 
     /**
@@ -77,8 +78,8 @@ public class TextBuddyTest {
         expectedOutput.add("this is");
         expectedOutput.add("to the program");
 
-        TextBuddy.sortFile("sortTest1.txt");
-        Vector<String> actualOutput = TextBuddy.readFromFile("sortTest1.txt");
+        file.sortFile("sortTest1.txt");
+        Vector<String> actualOutput = file.readFromFile("sortTest1.txt");
         // To account for the dummy empty String in index 0
         actualOutput.remove(0);
 
@@ -99,8 +100,8 @@ public class TextBuddyTest {
         expectedOutput.add("teXtBUDDy");
         expectedOutput.add("tExtbuDdY");
 
-        TextBuddy.sortFile("sortTest2.txt");
-        Vector<String> actualOutput = TextBuddy.readFromFile("sortTest2.txt");
+        file.sortFile("sortTest2.txt");
+        Vector<String> actualOutput = file.readFromFile("sortTest2.txt");
         // To account for the dummy empty String in index 0
         actualOutput.remove(0);
 
@@ -137,8 +138,8 @@ public class TextBuddyTest {
         expectedOutput.add("y");
         expectedOutput.add("z");
 
-        TextBuddy.sortFile("sortTest3.txt");
-        Vector<String> actualOutput = TextBuddy.readFromFile("sortTest3.txt");
+        file.sortFile("sortTest3.txt");
+        Vector<String> actualOutput = file.readFromFile("sortTest3.txt");
         // To account for the dummy empty String in index 0
         actualOutput.remove(0);
 
@@ -169,8 +170,8 @@ public class TextBuddyTest {
         expectedOutput.add("8");
         expectedOutput.add("9");
 
-        TextBuddy.sortFile("sortTest4.txt");
-        Vector<String> actualOutput = TextBuddy.readFromFile("sortTest4.txt");
+        file.sortFile("sortTest4.txt");
+        Vector<String> actualOutput = file.readFromFile("sortTest4.txt");
         // To account for the dummy empty String in index 0
         actualOutput.remove(0);
 
