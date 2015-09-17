@@ -15,11 +15,6 @@ public class TextBuddy {
 	private static final String MESSAGE_EMPTY = "%1$s is empty";
 	private static final String MESSAGE_INVALID = "Invalid command: %1$s";
 	
-	// The possible command types
-	public enum Command {
-		ADD, DELETE, DISPLAY, CLEAR, SEARCH, SORT, EXIT, INVALID;
-	}
-	
 	public static void main(String[] args) {
 		// Displays the welcome message
 		displayMessage(String.format(MESSAGE_WELCOME, args[0]));
@@ -38,40 +33,16 @@ public class TextBuddy {
 			// Gets the user command
 			String userCommand = sc.nextLine();
 			
-			// Determines the command type
-			Command command = getCommandType(userCommand);			
-			mapCommandToAction(command, fileName, userCommand);
+			// Determines the command type from the Parser
+			Parser parser = new Parser();
+			Command command = parser.getCommandType(userCommand);
+
+			// Performs the action according to the command from Parser
+			mapCommandToAction(parser, command, fileName, userCommand);
 		}
 	}
 	
-	/**
-	 * This method determines which operation the user has entered into the program
-	 * 
-	 * @param userCommand
-	 *            String which contains the entire line input by the user
-	 */
-	protected static Command getCommandType(String userCommand) {
-		
-		String commandType = getCommandTypeString(userCommand).toUpperCase();
-		
-		if (commandType.equals("ADD")) {
-			return Command.ADD;
-		} else if (commandType.equals("DELETE")) {
-			return Command.DELETE;
-		} else if (commandType.equals("DISPLAY")) {
-			return Command.DISPLAY;
-		} else if (commandType.equals("CLEAR")) {
-			return Command.CLEAR;
-		} else if (commandType.equals("SEARCH")) {
-			return Command.SEARCH;
-		} else if (commandType.equals("SORT")) {
-			return Command.SORT;
-		} else if (commandType.equals("EXIT")) {
-			return Command.EXIT;
-		} else {
-			return Command.INVALID;
-		}
-	}
+
 	
 	/**
 	 * This method maps the command entered by the user to the correct function to 
@@ -85,18 +56,20 @@ public class TextBuddy {
 	 *            String which contains the entire line input by the user
 	 * @throws Error
 	 */
-	protected static void mapCommandToAction(Command command, 
+	protected static void mapCommandToAction(Parser parser, Command command,
 			String fileName, String userCommand) throws Error {
-		
+
 		switch (command) {
 		case ADD:
 			addCommand(fileName, userCommand);
+
 			displayMessage(String.format(
 					MESSAGE_ADDED, fileName, getCommandArgs(userCommand)));
 			break;
 		case DELETE:
 			// Gets the line that is deleted to display in the console
-			String deletedLine = deleteCommand(fileName, userCommand);	
+			String deletedLine = deleteCommand(fileName, userCommand);
+
 			displayMessage(String.format(
 					MESSAGE_DELETED, fileName, deletedLine));
 			break;
@@ -104,7 +77,8 @@ public class TextBuddy {
 			displayFileContents(fileName);
 			break;
 		case CLEAR:
-			writeToBlankFile(fileName);	
+			writeToBlankFile(fileName);
+
 			displayMessage(String.format(MESSAGE_CLEARED, fileName));
 			break;
 		case SEARCH:
@@ -115,13 +89,14 @@ public class TextBuddy {
 			break;
 		case SORT:
 			sortFile(fileName);
+
 			displayMessage(String.format(MESSAGE_SORTED, fileName));
 			break;
 		case EXIT:
 			System.exit(0);
 		case INVALID:
 			displayMessage(String.format(
-					MESSAGE_INVALID, getCommandTypeString(userCommand)));
+					MESSAGE_INVALID, parser.getCommandTypeString(userCommand)));
 			break;
 		default: 
 			throw new Error("Unrecognized command type");	
@@ -157,7 +132,6 @@ public class TextBuddy {
 		for (int i = 1; i < wordArray.length - 1; i++) {
 			commandArgs += (wordArray[i] + " ");
 		}
-		// Manually add the last word to prevent additional whitespaces
 		commandArgs += wordArray[wordArray.length - 1];
 		return commandArgs;
 	}
@@ -401,19 +375,6 @@ public class TextBuddy {
 	private static int getLineNumber(String userCommand) {
 		String[] wordArray = userCommand.split(" ");
 		return Integer.valueOf(wordArray[1]);
-	}
-
-	/**
-	 * This method extracts the String equivalent of the command type from the entire 
-	 * command entered
-	 * 
-	 * @param userCommand
-	 *            String which contains the entire line input by the user
-	 * @return Command type in a String format
-	 */
-	private static String getCommandTypeString(String userCommand) {
-		String[] wordArray = userCommand.split(" ");
-		return wordArray[0];
 	}
 	
 	/**

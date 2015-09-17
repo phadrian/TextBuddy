@@ -1,7 +1,7 @@
-this is
-the test file
-for CE2
 added search
 and sort
+for CE2
 functions
+the test file
+this is
 to the program
