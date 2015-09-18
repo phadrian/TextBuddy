@@ -1,5 +1,3 @@
-import java.util.*;
-
 public class Parser {
 
     /**
@@ -59,7 +57,9 @@ public class Parser {
         for (int i = 1; i < wordArray.length - 1; i++) {
             commandArgs += (wordArray[i] + " ");
         }
+        // The last word is separated to prevent additional whitespace
         commandArgs += wordArray[wordArray.length - 1];
+
         return commandArgs;
     }
 

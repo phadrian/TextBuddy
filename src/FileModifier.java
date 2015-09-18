@@ -4,6 +4,8 @@ import java.util.Vector;
 
 public class FileModifier {
 
+    private static final String MESSAGE_EMPTY = "%1$s is empty";
+
     /*
 	 * Methods that write data to the file
 	 * ======================================
@@ -113,7 +115,8 @@ public class FileModifier {
         String inputLine;
         BufferedReader bfReader = null;
         Vector<String> commandArgsVector = new Vector<String>();
-        commandArgsVector.add(""); // Dummy to synchronize line numbers with Vector index
+        // Dummy to synchronize line numbers with Vector index
+        commandArgsVector.add("");
         try {
             bfReader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(fileName), "UTF-8"));
@@ -150,7 +153,7 @@ public class FileModifier {
             bfReader = new BufferedReader(new InputStreamReader(
                     new FileInputStream(fileName), "UTF-8"));
             if ((inputLine = bfReader.readLine()) == null) {
-                System.out.println(String.format(TextBuddy.MESSAGE_EMPTY, fileName));
+                System.out.println(String.format(MESSAGE_EMPTY, fileName));
             } else {
                 System.out.println(lineNumber + ". " + inputLine);
                 lineNumber++;
@@ -182,8 +185,10 @@ public class FileModifier {
     protected static String deleteLineFromFile(String fileName, int lineNumber) {
 
         Vector<String> commandArgsVector = readFromFile(fileName);
+
         String deletedLine = commandArgsVector.get(lineNumber);
         commandArgsVector.remove(lineNumber);
+
         writeToNewFile(fileName, commandArgsVector);
         return deletedLine;
     }
@@ -202,6 +207,7 @@ public class FileModifier {
 
         Vector<String> matchingArgsVector = new Vector<String>();
         Vector<String> commandArgsVector = readFromFile(fileName);
+
         for (int i = 1; i < commandArgsVector.size(); i++) {
             String inputLine = commandArgsVector.get(i);
             // Use lowercase to ensure case insensitive search

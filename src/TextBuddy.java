@@ -12,11 +12,12 @@ public class TextBuddy {
 	private static final String MESSAGE_NOTFOUND = "No results";
 	private static final String MESSAGE_SORTED = "%1$s has been sorted in alphabetical order";
 	private static final String MESSAGE_INVALID = "Invalid command: %1$s";
-	protected static final String MESSAGE_EMPTY = "%1$s is empty";
 
 	public static void main(String[] args) {
+
 		// Displays the welcome message
 		displayMessage(String.format(MESSAGE_WELCOME, args[0]));
+
 		// Runs the program till "exit" is entered
 		runProgramLoop(args[0]);
 	}
@@ -56,6 +57,7 @@ public class TextBuddy {
 	protected static void mapCommandToAction(Parser parser, Command command,
 			String fileName, String userCommand) throws Error {
 
+		// Create the FileModifier object that handles all file operations
 		FileModifier file = new FileModifier();
 
 		switch (command) {

@@ -1,16 +1,16 @@
-import org.junit.Test;
-
 import static org.junit.Assert.*;
+import org.junit.Test;
 import java.util.Vector;
-import java.io.*;
 
 public class TextBuddyTest {
 
     FileModifier file = new FileModifier();
+
     /**
      * testCase1 - testCase6
      * Test cases for TextBuddy.searchFile
      */
+
     @Test
     public void testCase1() {
         Vector<String> expectedOutput = new Vector<String>();
@@ -67,6 +67,7 @@ public class TextBuddyTest {
      * testCase7 - testCase10
      * Test cases for TextBuddy.sortFile
      */
+
     @Test
     public void testCase7() {
         Vector<String> expectedOutput = new Vector<String>();
