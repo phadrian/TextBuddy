@@ -8,7 +8,7 @@ public class Parser {
      * @param userCommand
      *            String which contains the entire line input by the user
      */
-    protected Command getCommandType(String userCommand) {
+    public Command getCommandType(String userCommand) {
 
         String commandType = getCommandTypeString(userCommand).toUpperCase();
 

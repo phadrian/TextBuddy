@@ -1,5 +1,4 @@
 import java.util.*;
-import java.io.*;
 
 public class TextBuddy {
 	
@@ -41,9 +40,7 @@ public class TextBuddy {
 			mapCommandToAction(parser, command, fileName, userCommand);
 		}
 	}
-	
 
-	
 	/**
 	 * This method maps the command entered by the user to the correct function to 
 	 * perform the operation
